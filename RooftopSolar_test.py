@@ -48,6 +48,13 @@ for ti in test_images:
     if lc is True:
     # get masks for that image
         mask = np.load(mf)
+        mask_ = np.empty((img_h, img_w, 1))
+
+        mask_resized = cv2.resize(mask.f.arr_0,(img_w,img_h))
+        mask_resized = np.array(mask_resized,dtype = np.float64)
+
+        mask_[...,0] = mask_resized
+
     ## preprocess image
         image_resized = cv2.resize(image, (img_w, img_h))
         image_resized = np.array(image_resized, dtype=np.float64)
@@ -62,7 +69,7 @@ for ti in test_images:
         result = model.predict(X)
 
         # calculate iou
-        accuracy = iou_score(mask.f.arr_0,result)
+        accuracy = iou_score(mask_,result)
 
         iou_result[ti_] = accuracy
         print(accuracy)
