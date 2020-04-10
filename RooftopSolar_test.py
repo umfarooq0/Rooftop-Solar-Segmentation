@@ -54,7 +54,7 @@ for ti in test_images:
         # standardize image
 
         sd_image = np.zeros((img_h,img_w))
-        sd_image = cv2.normalize(image_resized,sd_img,0,255,cv2.NORM_MINMAX)
+        sd_image = cv2.normalize(image_resized,sd_image,0,255,cv2.NORM_MINMAX)
 
         result = model.predict(sd_image)
 
