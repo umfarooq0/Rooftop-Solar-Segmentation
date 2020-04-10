@@ -55,8 +55,11 @@ for ti in test_images:
 
         sd_image = np.zeros((img_h,img_w))
         sd_image = cv2.normalize(image_resized,sd_image,0,255,cv2.NORM_MINMAX)
+        X = np.empty((self.batch_size, img_h, img_w, 1))
 
-        result = model.predict(sd_image)
+        X[0,] = np.expand_dims(sd_image, axis=2)
+
+        result = model.predict(X)
 
         # calculate iou
         accuracy = iou_score(mask.f.arr_0,result)
