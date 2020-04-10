@@ -3,7 +3,7 @@ from keras.models import load_model
 import numpy as np
 import glob
 import pandas as pd
-
+import cv2
 from os import listdir
 from os.path import isfile, join
 
@@ -26,6 +26,7 @@ def iou_score(target,prediction):
 model_name = 'RooftopSolar_BC.h5'
 path = '/home/umfarooq0/RooftopSolar/'
 model = load_model(path + model_name)
+print('model loaded')
  #where the masks are location
 mask_location = path
 # where the images are located
@@ -34,8 +35,9 @@ test_images_loc = path + 'test_data'
 test_images= [f for f in listdir(test_images_loc) if isfile(join(test_images_loc, f))]
 
 iou_results = {}
-
+ii = 0.0
 for ti in test_images:
+    ii+= 1.00
     ti_ = ti.split('.')[0]
 # get images
     image = cv2.imread(test_images_loc + '/' + ti, 0)
@@ -55,3 +57,5 @@ for ti in test_images:
     accuracy = iou_score(mask.f.arr_0,result)
 
     iou_result[ti_] = accuracy
+    print(accuracy)
+    print(ii/len(test_images))
