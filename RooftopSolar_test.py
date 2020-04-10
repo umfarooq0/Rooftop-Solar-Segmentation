@@ -45,22 +45,22 @@ for ti in test_images:
     mf = mask_location + 'test_masks' + ti_ + '.txt.npz'
 
     lc = os.path.exists(mf)
-            if lc is True:
-            # get masks for that image
-                mask = np.load(mf)
-            ## preprocess image
-                image_resized = cv2.resize(image, (img_w, img_h))
-                image_resized = np.array(image_resized, dtype=np.float64)
-                # standardize image
+    if lc is True:
+    # get masks for that image
+        mask = np.load(mf)
+    ## preprocess image
+        image_resized = cv2.resize(image, (img_w, img_h))
+        image_resized = np.array(image_resized, dtype=np.float64)
+        # standardize image
 
-                sd_image = np.zeros((img_h,img_w))
-                sd_image = cv2.normalize(image_resized,sd_img,0,255,cv2.NORM_MINMAX)
+        sd_image = np.zeros((img_h,img_w))
+        sd_image = cv2.normalize(image_resized,sd_img,0,255,cv2.NORM_MINMAX)
 
-                result = model.predict(sd_image)
+        result = model.predict(sd_image)
 
-                # calculate iou
-                accuracy = iou_score(mask.f.arr_0,result)
+        # calculate iou
+        accuracy = iou_score(mask.f.arr_0,result)
 
-                iou_result[ti_] = accuracy
-                print(accuracy)
+        iou_result[ti_] = accuracy
+        print(accuracy)
     print(ii/len(test_images))
