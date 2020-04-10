@@ -7,7 +7,7 @@ import pandas as pd
 from os import listdir
 from os.path import isfile, join
 
- from keras import backend as K
+from keras import backend as K
 
 
 
@@ -23,7 +23,7 @@ def iou_score(target,prediction):
 
 
 ## load keras model
-model_name = 'RooftopSolar_BC.h5' 
+model_name = 'RooftopSolar_BC.h5'
 path = '/home/umfarooq0/RooftopSolar/'
 model = load_model(path + model_name)
  #where the masks are location
