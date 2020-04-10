@@ -23,7 +23,7 @@ def iou_score(target,prediction):
 
 
 ## load keras model
-model_name =
+model_name = 'RooftopSolar_BC.h5' 
 path = '/home/umfarooq0/RooftopSolar/'
 model = load_model(path + model_name)
  #where the masks are location
@@ -55,4 +55,3 @@ for ti in test_images:
     accuracy = iou_score(mask.f.arr_0,result)
 
     iou_result[ti_] = accuracy
-    
