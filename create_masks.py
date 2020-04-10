@@ -5,6 +5,8 @@ from scipy import sparse
 
 path = '/home/umfarooq0/RooftopSolar/'
 
+# checking that it works
+
 def create_masks(img_name, df,img_h,img_w,loc):
     path = '/home/umfarooq0/RooftopSolar/'
         # input id/image name
@@ -23,7 +25,7 @@ def create_masks(img_name, df,img_h,img_w,loc):
 
     for i in range(rle_size):
         print(i)
-        
+
         RLE_string = RLE[i]
         rlen = [int(float(numstring)) for numstring in RLE_string.split(' ')]
         rlePairs = np.array(rlen).reshape(-1,2)
@@ -34,10 +36,10 @@ def create_masks(img_name, df,img_h,img_w,loc):
             grid_ = grid + grid_
         else:
             grid_ += grid
-    
+
     mask = grid_.reshape(img_h,img_w)
 
-    
+
     filename_save = path + loc + img_name + '.txt'
     np.savez_compressed(filename_save, mask)
 
