@@ -34,7 +34,7 @@ test_images_loc = path + 'test_data'
 
 test_images= [f for f in listdir(test_images_loc) if isfile(join(test_images_loc, f))]
 
-iou_results = {}
+iou_result = {}
 ii = 0.0
 for ti in test_images:
     ii+= 1.00
