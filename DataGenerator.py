@@ -64,7 +64,7 @@ class DataGenerator(Sequence):
         'generate data containing batch_size samples'
         X = np.empty((self.batch_size, self.img_h, self.img_w, 1))
         y = np.empty((self.batch_size, self.img_h, self.img_w, 1)) #  this was originally 4, but changed to 1
-        
+
 
         for idx, id in enumerate(list_ids_temp):
             file_path =  os.path.join(self.image_dir, id+'.tif')
@@ -75,17 +75,15 @@ class DataGenerator(Sequence):
                 im_sz = image.size
 
                 if im_sz > 0:
+
+                    image = image/255.0
+
+
                     image_resized = cv2.resize(image, (self.img_w, self.img_h))
                     image_resized = np.array(image_resized, dtype=np.float64)
 
-                    normalizedImg = np.zeros((5000, 5000))
-                    normalizedImg = cv2.normalize(image_resized,  normalizedImg, 0, 255, cv2.NORM_MINMAX)
-                    '''
-                    image_resized -= image_resized.mean()
-                    image_resized /= image_resized.std()
-                    '''
                     mask = np.empty((self.img_h, self.img_w, 1))
-                    
+
                     rle = self.labels.get(id)
                     rle = rle.f.arr_0
                     if rle is None:
