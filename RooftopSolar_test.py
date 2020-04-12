@@ -65,7 +65,7 @@ for ti in test_images:
         X = np.empty((1, img_h, img_w, 1))
 
         X[0,] = np.expand_dims(sd_image, axis=2)
-
+        
         result = model.predict(X)
 
         # calculate iou
