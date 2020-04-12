@@ -94,7 +94,7 @@ class DataGenerator(Sequence):
                     class_mask_resized = cv2.resize(class_mask, (self.img_w, self.img_h))
                     mask[...,0] = class_mask_resized
 
-                    X[idx,] = np.expand_dims(normalizedImg, axis=2)
+                    X[idx,] = np.expand_dims(image_resized, axis=2)
                     y[idx,] = mask
 
 
