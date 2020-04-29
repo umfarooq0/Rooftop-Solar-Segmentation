@@ -12,6 +12,9 @@ from keras.layers.pooling import MaxPooling2D
 from keras.layers.merge import concatenate
 from keras.losses import binary_crossentropy
 from keras.callbacks import EarlyStopping
+from keras.utils import multi_gpu_model
+
+
 
 import numpy as np
 import os
@@ -24,7 +27,34 @@ from keras.optimizers import *
 
 from matplotlib.path import Path
 
-def unet(pretrained_weights = None,input_size = (512,512,1)):
+
+
+
+
+def dice_loss(y_true, y_pred):
+
+    numerator = 2 * tf.reduce_sum(y_true * y_pred, axis=-1)
+    denominator = tf.reduce_sum(y_true + y_pred, axis=-1)
+
+    return 1 - (numerator + 1) / (denominator + 1)
+
+
+
+def mean_iou(y_true, y_pred):
+
+
+    prec = []
+    for t in np.arange(0.5, 1.0, 0.05):
+
+        y_pred_ = tf.to_int32(y_pred > t)
+        score, up_opt = tf.metrics.mean_iou(y_true, y_pred_, 2)
+        K.get_session().run(tf.local_variables_initializer())
+        with tf.control_dependencies([up_opt]):
+            score = tf.identity(score)
+        prec.append(score)
+    return K.mean(K.stack(prec), axis=0)
+
+def unet(pretrained_weights = None,input_size = (512,512,3)):
     inputs = Input(input_size)
     conv1 = Conv2D(64, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(inputs)
     conv1 = Conv2D(64, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(conv1)
@@ -67,8 +97,9 @@ def unet(pretrained_weights = None,input_size = (512,512,1)):
     conv10 = Conv2D(1, 1, activation = 'sigmoid')(conv9)
 
     model = Model(input = inputs, output = conv10)
+    
 
-    model.compile(optimizer = Adam(lr = 1e-8), loss ='binary_crossentropy' , metrics = ['accuracy'])
+    model.compile(optimizer = 'adam', loss = dice_loss)
 
 
 

@@ -62,11 +62,12 @@ class DataGenerator(Sequence):
 
     def __data_generation(self, list_ids_temp):
         'generate data containing batch_size samples'
-        X = np.empty((self.batch_size, self.img_h, self.img_w, 1))
+        X = np.empty((self.batch_size, self.img_h, self.img_w, 3))
         y = np.empty((self.batch_size, self.img_h, self.img_w, 1)) #  this was originally 4, but changed to 1
 
 
         for idx, id in enumerate(list_ids_temp):
+
             file_path =  os.path.join(self.image_dir, id+'.tif')
             lc = os.path.exists(file_path)
             if lc is True:
@@ -75,7 +76,7 @@ class DataGenerator(Sequence):
                 im_sz = image.size
 
                 if im_sz > 0:
-
+                    
                     image = image/255.0
 
 

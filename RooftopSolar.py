@@ -36,6 +36,12 @@ from create_masks import create_masks
 from DataGenerator import DataGenerator
 from models import unet
 
+from keras.callbacks import  ModelCheckpoint
+
+from os import listdir
+from os.path import isfile,join
+
+
 
 ## Import required data and join
 
@@ -95,13 +101,17 @@ sample_data = in_un.merge(df_coord,how = 'inner', on='image_name')
 sample_data['join'] = sample_data['join'].apply(lambda x: x.replace(","," "))
 
 sample_data.to_csv('sample_data.csv')
+train_image_dir = path + 'train_data'
 
-end 
 
-train_image_ids = in_un
+train_image_ids =  [f for f in listdir(train_image_dir) if isfile(join(train_image_dir, f))]
+
+
 val_size = 20
+'''
 train_image_ids = train_image_ids[train_image_ids.image_name != '11ska505815']
 train_image_ids = train_image_ids[train_image_ids.image_name != '10sfh465105']
+'''
 
 X_train, X_val = train_test_split(train_image_ids, test_size=val_size, random_state=42)
 
@@ -109,7 +119,7 @@ tfnames = sample_data['image_name'].unique()
 
 #Split tfnames into 4 parts and run each part
 
-first,second,third,fourth = np.array_split(tfnames,4)
+
 
 import sys
 
@@ -189,8 +199,6 @@ for d in all_m:
 '''
 
 mask_path = path + 'masks'
-from os import listdir
-from os.path import isfile,join
 
 
 maskfiles = [f for f in listdir(mask_path) if isfile(join(mask_path, f))]
@@ -225,15 +233,23 @@ X_val = X_val.reshape(X_val.shape[0])
 training_generator = DataGenerator(X_train, mask_data, **params)
 validation_generator = DataGenerator(X_val, mask_data, **params)
 
+import segmentation_models as sm
 
-xx,yy = training_generator.__getitem__(5)
+BACKBONE = 'resnet34'
+preprocess_input = sm.get_preprocessing(BACKBONE)
 
 
-model = unet()
-epochs = 5
+
+rooftopsolar_model1 = sm.Unet(BACKBONE,encoder_weights = 'imagenet')
+rooftopsolar_model1.compile('Adam',loss = sm.losses.bce_jaccard_loss,metrics = [sm.metrics.iou_score],)
+
+epochs = 80
 
 
 early_stopping_callback = EarlyStopping(monitor = 'val_loss', patience = 5)
-history = model.fit_generator(generator=training_generator, validation_data=validation_generator, epochs=epochs,callbacks = [early_stopping_callback], verbose=1)
+checkpointer = ModelCheckpoint('rooftopsolar_model6.h5',monitor = 'loss', verbose=1, save_best_only=True)
 
-model.save('RooftopSolar_BC.h5')
+
+rooftopsolar_model1.fit_generator(generator=training_generator, validation_data=validation_generator, epochs=epochs,callbacks = [early_stopping_callback,checkpointer], verbose=1)
+
+

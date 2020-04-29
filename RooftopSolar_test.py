@@ -19,13 +19,27 @@ def iou_score(target,prediction):
     union = np.logical_or(target, prediction)
     iou_score = np.sum(intersection) / np.sum(union)
     return iou_score
+ 
+def mean_iou(y_true,y_pred):
 
+    prec = []
+    for t in np.arange(0.5,1.0,0.05):
+        y_pred = tf.to_int32(y_pred > t)
+        score,up_opt = tf.metrics.mean_iou(y_true,y_pred,2)
+        K.get_session().run(tf.local_variables_initalizer())
+        with tf.control_dependencies([up_opt]):
+            score = tf.identity(score)
+            prec.append(score)
+    return K.mean(K.stack(prec),axis = 0)
 
+    
 
-## load keras model
-model_name = 'RooftopSolar_BC.h5'
 path = '/home/umfarooq0/RooftopSolar/'
-model = load_model(path + model_name)
+model_name = 'rooftopsolar_model6.h5'
+model_path = path + 'run/'
+
+
+model = load_model(model_path + model_name,compile = False )
 print('model loaded')
  #where the masks are location
 mask_location = path
@@ -56,15 +70,16 @@ for ti in test_images:
         mask_[...,0] = mask_resized
 
     ## preprocess image
+        image = image/255.0
+        
         image_resized = cv2.resize(image, (img_w, img_h))
         image_resized = np.array(image_resized, dtype=np.float64)
         # standardize image
 
-        sd_image = np.zeros((img_h,img_w))
-        sd_image = cv2.normalize(image_resized,sd_image,0,255,cv2.NORM_MINMAX)
-        X = np.empty((1, img_h, img_w, 1))
 
-        X[0,] = np.expand_dims(sd_image, axis=2)
+        X = np.empty((1, img_h, img_w, 3))
+
+        X[0,] = np.expand_dims(image_resized, axis=2)
         
         result = model.predict(X)
 
@@ -73,4 +88,4 @@ for ti in test_images:
 
         iou_result[ti_] = accuracy
         print(accuracy)
-    print(ii/len(test_images))
+    
